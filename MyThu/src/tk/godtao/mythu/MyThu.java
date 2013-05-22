@@ -78,17 +78,6 @@ public class MyThu implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// 输入用户名和密码
-		/*
-		 * Scanner sc = new Scanner(System.in); System.out.print("请输入用户名：");
-		 * String userid = sc.next(); System.out.print("请输入密码："); String
-		 * userpass = sc.next(); sc.close();
-		 */
-
-		// 屏蔽密码输出，但是需要真正的console支持
-		// Console cons = System.console();
-		// String userid = cons.readLine("请输入用户名：");
-		// String userpass = new String(cons.readPassword("请输入密码："));
 		try {
 			SchemeRegistry schemeRegistry = new SchemeRegistry();
 			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
@@ -116,6 +105,9 @@ public class MyThu implements ActionListener {
 				if (loginResult.indexOf("loginteacher_action.jsp") != -1) {
 					System.out.println("登陆成功！");
 					// 解析课程
+					// 提交作业
+					// 还没理清登陆逻辑 算了 再说吧
+					HttpPost homework = new HttpPost("http://learn.tsinghua.edu.cn/uploadFile/uploadFile.jsp");
 					HttpGet httpGet = new HttpGet(
 							"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 					HttpResponse courseResponse = httpclient.execute(httpGet);
@@ -162,16 +154,6 @@ public class MyThu implements ActionListener {
 								Downloader thread = new Downloader(httpclient,
 										courseWarePath, courseName);
 								thread.start();
-								/*
-								 * String tmp =
-								 * courseWaresLink.html().replaceAll( "&.*;",
-								 * ""); if (tmp.indexOf("font") != -1) { tmp =
-								 * tmp.substring(18, tmp.length() - 7); } //
-								 * System.out.println(tmp); if (tmp != "") {
-								 * Downloader thread = new Downloader(
-								 * httpclient, courseWarePath); thread.start();
-								 * }
-								 */
 							}
 						}
 					}
