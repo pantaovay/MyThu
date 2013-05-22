@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
