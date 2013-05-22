@@ -63,9 +63,11 @@ public class Downloader extends Thread {
 				}
 				in.close();
 				out.close();
-				System.out.println(filename + " download completes.");
+				//System.out.println(filename + " download completes.");
+				MyThu.downloadInformation.append(filename + " download completes.");
 			} else {
-				System.out.println(filename + " exists.");
+				//System.out.println(filename + " exists.");
+				MyThu.downloadInformation.append(filename + " exists.");
 			}
 			EntityUtils.consume(response.getEntity());
 		} catch (Exception e) {

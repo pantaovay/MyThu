@@ -2,8 +2,11 @@ package tk.godtao.mythu;
 
 //import java.io.Console;
 import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -14,10 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -40,11 +42,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class MyThu implements ActionListener {
-	HttpClient httpclient;
 	static JFrame f = null;
+	static String rootPath = "";
 	static boolean login = false;
-	JTextPane downloadInformation;
-	JTextField rootPath;
+	static JTextArea downloadInformation;
+	HttpClient httpclient;
 	JButton begin;
 	String userid;
 	String userpass;
@@ -64,20 +66,32 @@ public class MyThu implements ActionListener {
 		checkLogin();
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
+		contentPane.setLayout(new GridLayout(2, 2));
 
-		JPanel panel = new JPanel();
-
-		rootPath = new JTextField("设置根目录");
-		panel.add(rootPath);
-
-		downloadInformation = new JTextPane();
-		panel.add(downloadInformation);
-
+		JButton rootPath = new JButton("设置根目录(默认当前目录)");
+		rootPath.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				JFileChooser jc = new JFileChooser();
+				jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				jc.setDialogTitle("选择根目录");
+				int state = jc.showOpenDialog(null);
+				if (state == 1) {
+					return;
+				} else {
+					File folder = jc.getSelectedFile();
+					MyThu.rootPath = folder.getAbsolutePath();
+				}
+			}
+		});
+		contentPane.add(rootPath);
 		begin = new JButton("开始");
-		panel.add(begin);
+		contentPane.add(begin);
 		begin.addActionListener(this);
-
-		contentPane.add(panel);
+		
+		downloadInformation = new JTextArea("呵呵呵");
+		contentPane.add(downloadInformation);
+		
+		f.setBounds(200, 150, 400, 130);
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
 		f.addWindowListener(new WindowAdapter() {
@@ -90,7 +104,7 @@ public class MyThu implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			f.setVisible(false);
+			//f.setVisible(false);
 			// 解析课程
 			// 提交作业
 			// 还没理清登陆逻辑 算了 再说吧
@@ -110,8 +124,13 @@ public class MyThu implements ActionListener {
 				Pattern pattern = Pattern.compile(regEx);
 				Element course = coursesIterator.next();
 				// 每个课程建立文件夹
-				String courseName = rootPath.getText() + "/";
-				courseName += course.html();
+				String courseName;
+				if (rootPath == "") {
+					courseName = course.html();
+				} else {
+					courseName = rootPath + "/";
+					courseName += course.html();
+				}
 				courseName = courseName.toString();
 				File courseDir = new File(courseName);
 				if (!courseDir.isDirectory()) {
@@ -132,7 +151,8 @@ public class MyThu implements ActionListener {
 							.select("a[href~=.*uploadFile.*]");
 					Iterator<Element> courseWaresIterator = courseWares
 							.iterator();
-					System.out.println("下载到文件夹  " + courseName + "......");
+					//System.out.println("下载到文件夹  " + courseName + "......");
+					MyThu.downloadInformation.setText("下载到文件夹  " + courseName + "......");
 					while (courseWaresIterator.hasNext()) {
 						Element courseWaresLink = courseWaresIterator.next();
 						String courseWarePath = courseWaresLink.attr("href");

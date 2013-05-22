@@ -17,11 +17,12 @@ public class Login implements ActionListener {
 		this.d = new JDialog();
 		d.setTitle("请输入用户名和密码：");
 		this.dialogPane = d.getContentPane();
-		this.dialogPane.setLayout(new GridLayout(3,4));
-		this.dialogPane.add(new JLabel("用户名", SwingConstants.LEFT));
+		this.dialogPane.setLayout(new GridLayout(3,2));
+		
+		this.dialogPane.add(new JLabel("用户名"));
 		this.userid = new JTextField();
 		this.dialogPane.add(this.userid);
-		this.dialogPane.add(new JLabel("密码", SwingConstants.LEFT));
+		this.dialogPane.add(new JLabel("密码"));
 		this.userpass = new JPasswordField();
 		this.dialogPane.add(this.userpass);
 		this.confirm = new JButton("确定");
