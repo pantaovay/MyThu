@@ -40,7 +40,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class MyThu implements ActionListener {
+	HttpClient httpclient;
 	static JFrame f = null;
+	static boolean login = false;
 	JTextPane downloadInformation;
 	JTextField rootPath;
 	JButton begin;
@@ -48,8 +50,18 @@ public class MyThu implements ActionListener {
 	String userpass;
 
 	public MyThu(String userid, String userpass) throws Exception {
+		SchemeRegistry schemeRegistry = new SchemeRegistry();
+		schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
+				.getSocketFactory()));
+		schemeRegistry.register(new Scheme("https", 80, PlainSocketFactory
+				.getSocketFactory()));
+		ClientConnectionManager cm = new PoolingClientConnectionManager(
+				schemeRegistry);
+		httpclient = new DefaultHttpClient(cm);
+
 		this.userid = userid;
 		this.userpass = userpass;
+		checkLogin();
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
 
@@ -73,97 +85,86 @@ public class MyThu implements ActionListener {
 				System.exit(0);
 			}
 		});
-		f.setVisible(true);
-
+		f.setVisible(false);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			SchemeRegistry schemeRegistry = new SchemeRegistry();
-			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
-					.getSocketFactory()));
-			schemeRegistry.register(new Scheme("https", 80, PlainSocketFactory
-					.getSocketFactory()));
-			ClientConnectionManager cm = new PoolingClientConnectionManager(
-					schemeRegistry);
-			HttpClient httpclient = new DefaultHttpClient(cm);
-
-			HttpPost httpPost = new HttpPost(
-					"https://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp");
-			List<NameValuePair> login = new ArrayList<NameValuePair>();
-			login.add(new BasicNameValuePair("userid", userid));
-			login.add(new BasicNameValuePair("userpass", userpass));
-			login.add(new BasicNameValuePair("submit1", "登陆"));
-			UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login,
-					"utf-8");
-			httpPost.setEntity(entity);
-
-			HttpResponse loginResponse = httpclient.execute(httpPost);
-			HttpEntity loginEntity = loginResponse.getEntity();
-			if (loginEntity != null) {
-				String loginResult = EntityUtils.toString(loginEntity);
-				if (loginResult.indexOf("loginteacher_action.jsp") != -1) {
-					System.out.println("登陆成功！");
-					// 解析课程
-					// 提交作业
-					// 还没理清登陆逻辑 算了 再说吧
-					HttpPost homework = new HttpPost("http://learn.tsinghua.edu.cn/uploadFile/uploadFile.jsp");
-					HttpGet httpGet = new HttpGet(
-							"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
-					HttpResponse courseResponse = httpclient.execute(httpGet);
-					String coursePage = EntityUtils.toString(courseResponse
-							.getEntity());
-					Document coursePageDOM = Jsoup.parse(coursePage);
-					Elements courses = coursePageDOM
-							.select("a[href~=.*course_locate.*]");
-					Iterator<Element> coursesIterator = courses.iterator();
-					while (coursesIterator.hasNext()) {
-						String regEx = "\\d+";
-						Pattern pattern = Pattern.compile(regEx);
-						Element course = coursesIterator.next();
-						// 每个课程建立文件夹
-						String courseName = rootPath.getText() + "/";
-						courseName += course.html();
-						File courseDir = new File(courseName);
-						if (!courseDir.isDirectory()) {
-							courseDir.mkdir();
-						}
-						Matcher match = pattern.matcher(course.attr("href"));
-						while (match.find()) {
-							String course_id = match.group();
-							HttpGet courseWare = new HttpGet(
-									"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
-											+ course_id);
-							HttpResponse courseWareResponse = httpclient
-									.execute(courseWare);
-							String courseWarePage = EntityUtils
-									.toString(courseWareResponse.getEntity());
-							Document courseWarePageDOM = Jsoup
-									.parse(courseWarePage);
-							Elements courseWares = courseWarePageDOM
-									.select("a[href~=.*uploadFile.*]");
-							Iterator<Element> courseWaresIterator = courseWares
-									.iterator();
-							System.out.println("下载到文件夹  " + courseName
-									+ "......");
-							while (courseWaresIterator.hasNext()) {
-								Element courseWaresLink = courseWaresIterator
-										.next();
-								String courseWarePath = courseWaresLink
-										.attr("href");
-								Downloader thread = new Downloader(httpclient,
-										courseWarePath, courseName);
-								thread.start();
-							}
-						}
+			f.setVisible(false);
+			// 解析课程
+			// 提交作业
+			// 还没理清登陆逻辑 算了 再说吧
+			// HttpPost homework = new
+			// HttpPost("http://learn.tsinghua.edu.cn/uploadFile/uploadFile.jsp");
+			HttpGet httpGet = new HttpGet(
+					"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
+			HttpResponse courseResponse = httpclient.execute(httpGet);
+			String coursePage = EntityUtils
+					.toString(courseResponse.getEntity());
+			Document coursePageDOM = Jsoup.parse(coursePage);
+			Elements courses = coursePageDOM
+					.select("a[href~=.*course_locate.*]");
+			Iterator<Element> coursesIterator = courses.iterator();
+			while (coursesIterator.hasNext()) {
+				String regEx = "\\d+";
+				Pattern pattern = Pattern.compile(regEx);
+				Element course = coursesIterator.next();
+				// 每个课程建立文件夹
+				String courseName = rootPath.getText() + "/";
+				courseName += course.html();
+				courseName = courseName.toString();
+				File courseDir = new File(courseName);
+				if (!courseDir.isDirectory()) {
+					courseDir.mkdir();
+				}
+				Matcher match = pattern.matcher(course.attr("href"));
+				while (match.find()) {
+					String course_id = match.group();
+					HttpGet courseWare = new HttpGet(
+							"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
+									+ course_id);
+					HttpResponse courseWareResponse = httpclient
+							.execute(courseWare);
+					String courseWarePage = EntityUtils
+							.toString(courseWareResponse.getEntity());
+					Document courseWarePageDOM = Jsoup.parse(courseWarePage);
+					Elements courseWares = courseWarePageDOM
+							.select("a[href~=.*uploadFile.*]");
+					Iterator<Element> courseWaresIterator = courseWares
+							.iterator();
+					System.out.println("下载到文件夹  " + courseName + "......");
+					while (courseWaresIterator.hasNext()) {
+						Element courseWaresLink = courseWaresIterator.next();
+						String courseWarePath = courseWaresLink.attr("href");
+						Downloader thread = new Downloader(httpclient,
+								courseWarePath, courseName);
+						thread.start();
 					}
-				} else {
-					System.out.println("登陆失败");
 				}
 			}
-			EntityUtils.consume(loginEntity);
 		} catch (Exception e1) {
 			System.out.println(e1.getMessage());
 		}
+	}
+
+	public void checkLogin() throws Exception {
+		HttpPost httpPost = new HttpPost(
+				"https://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp");
+		List<NameValuePair> login = new ArrayList<NameValuePair>();
+		login.add(new BasicNameValuePair("userid", userid));
+		login.add(new BasicNameValuePair("userpass", userpass));
+		login.add(new BasicNameValuePair("submit1", "登陆"));
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login, "utf-8");
+		httpPost.setEntity(entity);
+
+		HttpResponse loginResponse = httpclient.execute(httpPost);
+		HttpEntity loginEntity = loginResponse.getEntity();
+		if (loginEntity != null) {
+			String loginResult = EntityUtils.toString(loginEntity);
+			if (loginResult.indexOf("loginteacher_action.jsp") != -1) {
+				MyThu.login = true;
+			}
+		}
+		EntityUtils.consume(loginEntity);
 	}
 }

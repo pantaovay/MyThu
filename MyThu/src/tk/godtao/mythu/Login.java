@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-public class GUI implements ActionListener {
+public class Login implements ActionListener {
 	JTextField userid;
 	JPasswordField userpass;
 	JButton confirm, concel;
@@ -13,7 +13,7 @@ public class GUI implements ActionListener {
 	JDialog d;
 	JFrame f;
 	
-	public GUI(JFrame f){
+	public Login(JFrame f){
 		this.d = new JDialog();
 		d.setTitle("请输入用户名和密码：");
 		this.dialogPane = d.getContentPane();
@@ -41,9 +41,16 @@ public class GUI implements ActionListener {
 		if(cmd.equals("确定")) {
 			String name = this.userid.getText();
 			char[] pass = this.userpass.getPassword();
-			this.d.dispose();
 			try {
 				new MyThu(name, new String(pass));
+				if(MyThu.login) {
+					d.dispose();
+					MyThu.f.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(this.d, "用户名或密码错误", "Error", JOptionPane.WARNING_MESSAGE);
+					//userid.setText("");
+					userpass.setText("");
+				}
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

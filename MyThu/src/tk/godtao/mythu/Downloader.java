@@ -25,7 +25,6 @@ public class Downloader extends Thread {
 
 	public static String getFileName(HttpResponse response) {
 		Header contentHeader = response.getFirstHeader("Content-Disposition");
-		// System.out.println(contentHeader);
 		String filename = null;
 		if (contentHeader != null) {
 			HeaderElement[] values = contentHeader.getElements();
@@ -35,9 +34,10 @@ public class Downloader extends Thread {
 					try {
 						filename = param.getValue();
 						byte[] tmp = filename.getBytes("ISO-8859-1");
+                        // convert to gbk encode
 						filename = new String(tmp, "GBK");
 					} catch (Exception e) {
-						e.printStackTrace();
+                        System.out.println(e.getMessage());
 					}
 				}
 			}
