@@ -11,9 +11,8 @@ public class Login implements ActionListener {
 	JButton confirm, concel;
 	Container dialogPane;
 	JDialog d;
-	JFrame f;
 	
-	public Login(JFrame f){
+	public Login(){
 		this.d = new JDialog();
 		d.setTitle("请输入用户名和密码：");
 		this.dialogPane = d.getContentPane();
@@ -34,7 +33,6 @@ public class Login implements ActionListener {
 		this.d.setBounds(200, 150, 400, 130);
 		this.d.getRootPane().setDefaultButton(confirm);
 		this.d.setVisible(true);
-		this.f = f;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -43,12 +41,12 @@ public class Login implements ActionListener {
 			String name = this.userid.getText();
 			char[] pass = this.userpass.getPassword();
 			try {
-				new MyThu(name, new String(pass));
+				MyThu mythu = new MyThu(name, new String(pass));
 				if(MyThu.login) {
-					d.dispose();
-					MyThu.f.setVisible(true);
+					this.d.dispose();
+					mythu.MyThuWindow();
 				} else {
-					JOptionPane.showMessageDialog(this.d, "用户名或密码错误", "Error", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this.d, "用户名或密码错误", "错误", JOptionPane.WARNING_MESSAGE);
 					//userid.setText("");
 					userpass.setText("");
 				}

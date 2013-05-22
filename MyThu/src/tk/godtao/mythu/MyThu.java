@@ -45,7 +45,6 @@ public class MyThu implements ActionListener {
 	static JFrame f = null;
 	static String rootPath = "";
 	static boolean login = false;
-	static JTextArea downloadInformation;
 	HttpClient httpclient;
 	JButton begin;
 	String userid;
@@ -64,6 +63,9 @@ public class MyThu implements ActionListener {
 		this.userid = userid;
 		this.userpass = userpass;
 		checkLogin();
+	}
+
+	public void MyThuWindow() {
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
 		contentPane.setLayout(new GridLayout(2, 2));
@@ -87,10 +89,7 @@ public class MyThu implements ActionListener {
 		begin = new JButton("开始");
 		contentPane.add(begin);
 		begin.addActionListener(this);
-		
-		downloadInformation = new JTextArea("呵呵呵");
-		contentPane.add(downloadInformation);
-		
+
 		f.setBounds(200, 150, 400, 130);
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
@@ -99,17 +98,12 @@ public class MyThu implements ActionListener {
 				System.exit(0);
 			}
 		});
-		f.setVisible(false);
+		f.setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		f.dispose();
 		try {
-			//f.setVisible(false);
-			// 解析课程
-			// 提交作业
-			// 还没理清登陆逻辑 算了 再说吧
-			// HttpPost homework = new
-			// HttpPost("http://learn.tsinghua.edu.cn/uploadFile/uploadFile.jsp");
 			HttpGet httpGet = new HttpGet(
 					"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 			HttpResponse courseResponse = httpclient.execute(httpGet);
@@ -151,8 +145,7 @@ public class MyThu implements ActionListener {
 							.select("a[href~=.*uploadFile.*]");
 					Iterator<Element> courseWaresIterator = courseWares
 							.iterator();
-					//System.out.println("下载到文件夹  " + courseName + "......");
-					MyThu.downloadInformation.setText("下载到文件夹  " + courseName + "......");
+					System.out.println("下载到文件夹  " + courseName + "......");
 					while (courseWaresIterator.hasNext()) {
 						Element courseWaresLink = courseWaresIterator.next();
 						String courseWarePath = courseWaresLink.attr("href");
@@ -176,7 +169,6 @@ public class MyThu implements ActionListener {
 		login.add(new BasicNameValuePair("submit1", "登陆"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login, "utf-8");
 		httpPost.setEntity(entity);
-
 		HttpResponse loginResponse = httpclient.execute(httpPost);
 		HttpEntity loginEntity = loginResponse.getEntity();
 		if (loginEntity != null) {

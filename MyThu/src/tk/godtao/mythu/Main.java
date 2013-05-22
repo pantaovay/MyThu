@@ -1,8 +1,11 @@
 package tk.godtao.mythu;
 
+import javax.swing.UIManager;
+
 public class Main {
 	public static void main(String[] args) throws Exception {
-		new Login(null);
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		new Login();
 	}
 
 }

@@ -17,7 +17,8 @@ public class Downloader extends Thread {
 	private String courseWarePath;
 	private String courseDir;
 
-	public Downloader(HttpClient httpclient, String courseWarePath, String courseDir) {
+	public Downloader(HttpClient httpclient, String courseWarePath,
+			String courseDir) {
 		this.httpclient = httpclient;
 		this.courseWarePath = courseWarePath;
 		this.courseDir = courseDir;
@@ -34,10 +35,9 @@ public class Downloader extends Thread {
 					try {
 						filename = param.getValue();
 						byte[] tmp = filename.getBytes("ISO-8859-1");
-                        // convert to gbk encode
 						filename = new String(tmp, "GBK");
 					} catch (Exception e) {
-                        System.out.println(e.getMessage());
+						System.out.println(e.getMessage());
 					}
 				}
 			}
@@ -46,28 +46,25 @@ public class Downloader extends Thread {
 	}
 
 	public void run() {
-
 		try {
 			HttpGet courseWareFile = new HttpGet("http://learn.tsinghua.edu.cn"
 					+ courseWarePath);
 			HttpResponse response = httpclient.execute(courseWareFile);
 			String filename = Downloader.getFileName(response);
-			File file = new File(this.courseDir+"/"+filename);
+			File file = new File(this.courseDir + "/" + filename);
 			if (!file.exists()) {
 				FileOutputStream out = new FileOutputStream(file);
 				InputStream in = response.getEntity().getContent();
-				byte buffer[] = new byte[20480];
+				byte buffer[] = new byte[32768];
 				int len = 0;
 				while ((len = in.read(buffer)) != -1) {
 					out.write(buffer, 0, len);
 				}
 				in.close();
 				out.close();
-				//System.out.println(filename + " download completes.");
-				MyThu.downloadInformation.append(filename + " download completes.");
+				System.out.println(filename + " download completes.");
 			} else {
-				//System.out.println(filename + " exists.");
-				MyThu.downloadInformation.append(filename + " exists.");
+				System.out.println(filename + " exists.");
 			}
 			EntityUtils.consume(response.getEntity());
 		} catch (Exception e) {
