@@ -10,14 +10,6 @@
 	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpcore-4.2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpmime-4.2.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/jsoup-1.7.2.jar"/>
-	<classpathentry kind="var" path="JFACE_LIB"/>
-	<classpathentry kind="var" path="SWT_LIB"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding_1.4.1.v20120912-132807.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.source_1.4.1.v20120912-132807.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.beans_1.2.200.v20120523-1955.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.beans.source_1.2.200.v20120523-1955.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.observable_1.4.1.v20120521-2329.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.observable.source_1.4.1.v20120521-2329.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.property_1.4.100.v20120523-1955.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.core.databinding.property.source_1.4.100.v20120523-1955.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.jface.databinding_1.6.0.v20120912-132807.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.jface.databinding.source_1.6.0.v20120912-132807.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/org.eclipse.equinox.common_3.6.100.v20120522-1841.jar" sourcepath="D:/MySoftware/eclipse/plugins/org.eclipse.equinox.common.source_3.6.100.v20120522-1841.jar"/>
-	<classpathentry kind="lib" path="D:/MySoftware/eclipse/plugins/com.ibm.icu_4.4.2.v20110823.jar" sourcepath="D:/MySoftware/eclipse/plugins/com.ibm.icu.source_4.4.2.v20110823.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

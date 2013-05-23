@@ -64,12 +64,12 @@ public class MyThu implements ActionListener {
 		checkLogin();
 	}
 
-	public void MyThuWindow() {
+	public void MyThuWindow(String path) {
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
 		contentPane.setLayout(new GridLayout(2, 2));
 
-		JButton rootPath = new JButton("设置根目录(默认当前目录)");
+		JButton rootPath = new JButton("设置根目录(默认上次使用目录)" + path);
 		rootPath.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser jc = new JFileChooser();
@@ -81,6 +81,13 @@ public class MyThu implements ActionListener {
 				} else {
 					File folder = jc.getSelectedFile();
 					MyThu.rootPath = folder.getAbsolutePath();
+					if (Login.rememberPass == true) {
+						try {
+							Data.insert(Login.name, Login.pass, MyThu.rootPath);
+						} catch (ClassNotFoundException e1) {
+							e1.printStackTrace();
+						}
+					}
 				}
 			}
 		});
