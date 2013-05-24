@@ -1,8 +1,3 @@
-/*
- * Author: Tao Pan
- * Email: pantaovay@gmail.com
- * Function: downloader
- */
 package tk.godtao.mythu;
 
 import java.io.File;

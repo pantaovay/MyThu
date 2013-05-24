@@ -1,8 +1,3 @@
-/*
- * Author: Tao Pan
- * Email: pantaovay@gmail.com
- * Function: main function
- */
 package tk.godtao.mythu;
 
 //import java.io.Console;
@@ -79,12 +74,12 @@ public class MyThu implements ActionListener {
 		Container contentPane = f.getContentPane();
 		contentPane.setLayout(new GridLayout(3, 2));
 
-		JButton rootPath = new JButton("璁剧疆鏍圭洰褰� "+ path);
+		JButton rootPath = new JButton("设置根目录" + path);
 		rootPath.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser jc = new JFileChooser();
 				jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				jc.setDialogTitle("MyThu");
+				jc.setDialogTitle("MyThu 选择根目录");
 				int state = jc.showOpenDialog(null);
 				if (state == 1) {
 					return;
@@ -102,15 +97,15 @@ public class MyThu implements ActionListener {
 			}
 		});
 		contentPane.add(rootPath);
-		begin = new JButton("寮�");
+		begin = new JButton("开始");
 		contentPane.add(begin);
 		begin.addActionListener(this);
 
-		JButton deadline = new JButton("鏌ョ湅鎴村痉鍏�");
+		JButton deadline = new JButton("查看戴德兰");
 		contentPane.add(deadline);
 		deadline.addActionListener(this);
 
-		f.setBounds(200, 150, 400, 130);
+		f.setBounds(new Rectangle(200, 300));
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
 		f.addWindowListener(new WindowAdapter() {
@@ -132,7 +127,7 @@ public class MyThu implements ActionListener {
 
 		String now = f.format(today);
 
-		JFrame homeworkFrame = new JFrame("鎴村痉鍏�");
+		JFrame homeworkFrame = new JFrame("戴德兰");
 		Container homeworkContainer = homeworkFrame.getContentPane();
 		homeworkContainer.setLayout(new GridLayout(20, 2));
 		homeworkFrame.setBounds(new Rectangle(600, 500));
@@ -155,7 +150,6 @@ public class MyThu implements ActionListener {
 				String regEx = "\\d+";
 				Pattern pattern = Pattern.compile(regEx);
 				Element course = coursesIterator.next();
-				// 脙驴赂枚驴脦鲁脤陆篓脕垄脦脛录镁录脨
 				String courseName;
 				String originCourseName = course.html();
 				if (rootPath == "") {
@@ -173,7 +167,7 @@ public class MyThu implements ActionListener {
 
 				while (match.find()) {
 					String course_id = match.group();
-					if (cmd.equals("寮�")) {
+					if (cmd.equals("开始")) {
 						HttpGet courseWare = new HttpGet(
 								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
 										+ course_id);
@@ -187,7 +181,7 @@ public class MyThu implements ActionListener {
 								.select("a[href~=.*uploadFile.*]");
 						Iterator<Element> courseWaresIterator = courseWares
 								.iterator();
-						System.out.println("涓嬭浇鍒版枃浠跺す  " + courseName + "......");
+						System.out.println("下载到 " + courseName + "......");
 						while (courseWaresIterator.hasNext()) {
 							Element courseWaresLink = courseWaresIterator
 									.next();
@@ -198,7 +192,7 @@ public class MyThu implements ActionListener {
 							thread.start();
 						}
 					}
-					if (cmd.equals("鏌ョ湅鎴村痉鍏�)) {
+					if (cmd.equals("查看戴德兰")) {
 						HttpGet courseHomwork = new HttpGet(
 								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="
 										+ course_id);
@@ -242,8 +236,8 @@ public class MyThu implements ActionListener {
 								count++;
 							}
 						}
-						courseHomeworkTextArea.setText("浣犳湁 " + count
-								+ " 涓湭浜や綔涓� "
+						courseHomeworkTextArea.setText("有 " + count
+								+ " 未交作业ֹ："
 								+ courseHomeworkTextArea.getText());
 						homeworkContainer.add(courseHomeworkTextArea);
 					}
@@ -252,7 +246,7 @@ public class MyThu implements ActionListener {
 		} catch (Exception e1) {
 			System.out.println(e1.getMessage());
 		}
-		if (cmd.equals("鏌ョ湅鎴村痉鍏�)) {
+		if (cmd.equals("查看戴德兰")) {
 			// homeworkFrame.add(splitPane);
 			homeworkFrame.setVisible(true);
 		}
@@ -264,7 +258,7 @@ public class MyThu implements ActionListener {
 		List<NameValuePair> login = new ArrayList<NameValuePair>();
 		login.add(new BasicNameValuePair("userid", userid));
 		login.add(new BasicNameValuePair("userpass", userpass));
-		login.add(new BasicNameValuePair("submit1", "鎻愪氦"));
+		login.add(new BasicNameValuePair("submit1", "提交"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login, "utf-8");
 		httpPost.setEntity(entity);
 		HttpResponse loginResponse = httpclient.execute(httpPost);

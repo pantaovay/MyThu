@@ -1,8 +1,3 @@
-/*
- * Author: Tao Pan
- * Email: pantaovay@gmail.com
- * Function: database management
- */
 package tk.godtao.mythu;
 
 import java.sql.Connection;
@@ -70,6 +65,8 @@ public class Data {
 		}
 		return user;
 	}
+	
+	// 用不到了
 	public static String sha1(String password) {
 		return DigestUtils.shaHex(password);
 	}
