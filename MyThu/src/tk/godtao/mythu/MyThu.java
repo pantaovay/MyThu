@@ -1,3 +1,8 @@
+/*
+ * Author: Tao Pan
+ * Email: pantaovay@gmail.com
+ * Function: main function
+ */
 package tk.godtao.mythu;
 
 //import java.io.Console;
@@ -74,12 +79,12 @@ public class MyThu implements ActionListener {
 		Container contentPane = f.getContentPane();
 		contentPane.setLayout(new GridLayout(3, 2));
 
-		JButton rootPath = new JButton("ÉèÖÃ¸ùÄ¿Â¼(Ä¬ÈÏÉÏ´ÎÊ¹ÓÃÄ¿Â¼)" + path);
+		JButton rootPath = new JButton("ç’å‰§ç–†éåœ­æ´°è¤°ï¿½ "+ path);
 		rootPath.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser jc = new JFileChooser();
 				jc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				jc.setDialogTitle("Ñ¡Ôñ¸ùÄ¿Â¼");
+				jc.setDialogTitle("MyThu");
 				int state = jc.showOpenDialog(null);
 				if (state == 1) {
 					return;
@@ -97,11 +102,11 @@ public class MyThu implements ActionListener {
 			}
 		});
 		contentPane.add(rootPath);
-		begin = new JButton("¿ªÊ¼");
+		begin = new JButton("å¯®ï¿½îŠ");
 		contentPane.add(begin);
 		begin.addActionListener(this);
 
-		JButton deadline = new JButton("²é¿´´÷µÂÀ¼");
+		JButton deadline = new JButton("éŒãƒ§æ¹…é´æ‘ç—‰éï¿½");
 		contentPane.add(deadline);
 		deadline.addActionListener(this);
 
@@ -127,7 +132,7 @@ public class MyThu implements ActionListener {
 
 		String now = f.format(today);
 
-		JFrame homeworkFrame = new JFrame("´÷µÂÀ¼");
+		JFrame homeworkFrame = new JFrame("é´æ‘ç—‰éï¿½");
 		Container homeworkContainer = homeworkFrame.getContentPane();
 		homeworkContainer.setLayout(new GridLayout(20, 2));
 		homeworkFrame.setBounds(new Rectangle(600, 500));
@@ -150,7 +155,7 @@ public class MyThu implements ActionListener {
 				String regEx = "\\d+";
 				Pattern pattern = Pattern.compile(regEx);
 				Element course = coursesIterator.next();
-				// Ã¿¸ö¿Î³Ì½¨Á¢ÎÄ¼ş¼Ğ
+				// è„™é©´èµ‚æšé©´è„¦é²è„¤é™†ç¯“è„•å„è„¦è„›å½•é•å½•è„¨
 				String courseName;
 				String originCourseName = course.html();
 				if (rootPath == "") {
@@ -168,7 +173,7 @@ public class MyThu implements ActionListener {
 
 				while (match.find()) {
 					String course_id = match.group();
-					if (cmd.equals("¿ªÊ¼")) {
+					if (cmd.equals("å¯®ï¿½îŠ")) {
 						HttpGet courseWare = new HttpGet(
 								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
 										+ course_id);
@@ -182,7 +187,7 @@ public class MyThu implements ActionListener {
 								.select("a[href~=.*uploadFile.*]");
 						Iterator<Element> courseWaresIterator = courseWares
 								.iterator();
-						System.out.println("ÏÂÔØµ½ÎÄ¼ş¼Ğ  " + courseName + "......");
+						System.out.println("æ¶“å¬­æµ‡é’ç‰ˆæƒæµ è·ºã™  " + courseName + "......");
 						while (courseWaresIterator.hasNext()) {
 							Element courseWaresLink = courseWaresIterator
 									.next();
@@ -193,7 +198,7 @@ public class MyThu implements ActionListener {
 							thread.start();
 						}
 					}
-					if (cmd.equals("²é¿´´÷µÂÀ¼")) {
+					if (cmd.equals("éŒãƒ§æ¹…é´æ‘ç—‰éï¿½)) {
 						HttpGet courseHomwork = new HttpGet(
 								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="
 										+ course_id);
@@ -237,8 +242,8 @@ public class MyThu implements ActionListener {
 								count++;
 							}
 						}
-						courseHomeworkTextArea.setText("×Ü¹²ÓĞ " + count
-								+ " ¸ö×÷ÒµÒª½ØÖ¹: "
+						courseHomeworkTextArea.setText("æµ£çŠ³æ¹ " + count
+								+ " æ¶“î…æ¹­æµœã‚„ç¶”æ¶“ï¿½ "
 								+ courseHomeworkTextArea.getText());
 						homeworkContainer.add(courseHomeworkTextArea);
 					}
@@ -247,7 +252,7 @@ public class MyThu implements ActionListener {
 		} catch (Exception e1) {
 			System.out.println(e1.getMessage());
 		}
-		if (cmd.equals("²é¿´´÷µÂÀ¼")) {
+		if (cmd.equals("éŒãƒ§æ¹…é´æ‘ç—‰éï¿½)) {
 			// homeworkFrame.add(splitPane);
 			homeworkFrame.setVisible(true);
 		}
@@ -259,7 +264,7 @@ public class MyThu implements ActionListener {
 		List<NameValuePair> login = new ArrayList<NameValuePair>();
 		login.add(new BasicNameValuePair("userid", userid));
 		login.add(new BasicNameValuePair("userpass", userpass));
-		login.add(new BasicNameValuePair("submit1", "µÇÂ½"));
+		login.add(new BasicNameValuePair("submit1", "é»æ„ªæ°¦"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login, "utf-8");
 		httpPost.setEntity(entity);
 		HttpResponse loginResponse = httpclient.execute(httpPost);

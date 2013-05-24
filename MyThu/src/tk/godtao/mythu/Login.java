@@ -1,3 +1,8 @@
+/*
+ * Author: Tao Pan
+ * Email: pantaovay@gmail.com
+ * Function: login management
+ */
 package tk.godtao.mythu;
 
 import java.awt.*;
@@ -21,7 +26,7 @@ public class Login implements ActionListener {
 		String[] user = Data.verify();
 		if (user[0].isEmpty()) {
 			this.d = new JDialog();
-			d.setTitle("MyThu µÇÂ½");
+			d.setTitle("MyThu ç™»é™†");
 			this.dialogPane = d.getContentPane();
 			this.dialogPane.setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
@@ -33,7 +38,7 @@ public class Login implements ActionListener {
 			}
 			c.gridx = 0;
 			c.gridy = 0;
-			this.dialogPane.add(new JLabel("ÓÃ»§Ãû"), c);
+			this.dialogPane.add(new JLabel("ç”¨æˆ·å"), c);
 
 			this.userid = new JTextField(20);
 			c.gridx = 1;
@@ -42,27 +47,27 @@ public class Login implements ActionListener {
 
 			c.gridx = 0;
 			c.gridy = 1;
-			this.dialogPane.add(new JLabel("ÃÜ  Âë"), c);
+			this.dialogPane.add(new JLabel("å¯†ç "), c);
 			this.userpass = new JPasswordField(20);
 			c.gridx = 1;
 			c.gridy = 1;
 			this.dialogPane.add(this.userpass, c);
 
-			JRadioButton remember = new JRadioButton("¼Ç×¡ÃÜÂë");
+			JRadioButton remember = new JRadioButton("è®°ä½å¯†ç ");
 			c.gridx = 1;
 			c.gridy = 2;
 			this.dialogPane.add(remember, c);
 			remember.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (e.getActionCommand().equals("¼Ç×¡ÃÜÂë")) {
-						// System.out.println("ºÇºÇ");
+					if (e.getActionCommand().equals("è®°ä½å¯†ç ")) {
+						// System.out.println("ÂºÃ‡ÂºÃ‡");
 						rememberPass = true;
 					}
 				}
 
 			});
-			this.confirm = new JButton("È·¶¨");
-			this.concel = new JButton("ÍË³ö");
+			this.confirm = new JButton("ç¡®å®š");
+			this.concel = new JButton("å–æ¶ˆ");
 			c.gridx = 0;
 			c.gridy = 3;
 			this.dialogPane.add(this.concel, c);
@@ -79,7 +84,7 @@ public class Login implements ActionListener {
 			if (MyThu.login) {
 				mythu.MyThuWindow(user[2]);
 			} else {
-				JOptionPane.showMessageDialog(null, "ÓÃ»§Ãû»òÃÜÂë´íÎó", "MyThu ´íÎó",
+				JOptionPane.showMessageDialog(null, "ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯", "MyThu é”™è¯¯",
 						JOptionPane.WARNING_MESSAGE);
 			}
 		}
@@ -87,7 +92,7 @@ public class Login implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		if (cmd.equals("È·¶¨")) {
+		if (cmd.equals("ÃˆÂ·Â¶Â¨")) {
 			Login.name = this.userid.getText();
 			Login.pass = new String(this.userpass.getPassword());
 			try {
@@ -96,8 +101,8 @@ public class Login implements ActionListener {
 					this.d.dispose();
 					mythu.MyThuWindow("");
 				} else {
-					JOptionPane.showMessageDialog(this.d, "ÓÃ»§Ãû»òÃÜÂë´íÎó",
-							"MyThu ´íÎó", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(this.d, "ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯",
+							"MyThu é”™è¯¯", JOptionPane.WARNING_MESSAGE);
 					// userid.setText("");
 					userpass.setText("");
 				}
@@ -106,7 +111,7 @@ public class Login implements ActionListener {
 			}
 			return;
 		}
-		if (cmd.equals("ÍË³ö")) {
+		if (cmd.equals("å–æ¶ˆ")) {
 			System.exit(0);
 		}
 	}

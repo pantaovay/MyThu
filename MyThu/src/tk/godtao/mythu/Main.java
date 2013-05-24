@@ -1,3 +1,8 @@
+/*
+ * Author: Tao Pan
+ * Email: pantaovay@gmail.com
+ * Function: main entrance
+ */
 package tk.godtao.mythu;
 
 import javax.swing.UIManager;
