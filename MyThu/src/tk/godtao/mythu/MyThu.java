@@ -3,6 +3,7 @@ package tk.godtao.mythu;
 //import java.io.Console;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -10,7 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,6 +22,8 @@ import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -67,7 +72,7 @@ public class MyThu implements ActionListener {
 	public void MyThuWindow(String path) {
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
-		contentPane.setLayout(new GridLayout(2, 2));
+		contentPane.setLayout(new GridLayout(3, 2));
 
 		JButton rootPath = new JButton("设置根目录(默认上次使用目录)" + path);
 		rootPath.addMouseListener(new MouseAdapter() {
@@ -96,6 +101,10 @@ public class MyThu implements ActionListener {
 		contentPane.add(begin);
 		begin.addActionListener(this);
 
+		JButton deadline = new JButton("查看戴德兰");
+		contentPane.add(deadline);
+		deadline.addActionListener(this);
+
 		f.setBounds(200, 150, 400, 130);
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
@@ -109,6 +118,24 @@ public class MyThu implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		f.dispose();
+		String cmd = e.getActionCommand();
+		// System.out.println(cmd);
+
+		Date today = new Date();
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+		// System.out.println(f.format(today));
+
+		String now = f.format(today);
+
+		JFrame homeworkFrame = new JFrame("戴德兰");
+		Container homeworkContainer = homeworkFrame.getContentPane();
+		homeworkContainer.setLayout(new GridLayout(20, 2));
+		homeworkFrame.setBounds(new Rectangle(600, 500));
+		// JScrollPane scrollPane = new JScrollPane();
+		// JList list = new JList();
+		// JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+		// scrollPane, list);
+		// splitPane.setContinuousLayout(true);
 		try {
 			HttpGet httpGet = new HttpGet(
 					"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
@@ -125,11 +152,12 @@ public class MyThu implements ActionListener {
 				Element course = coursesIterator.next();
 				// 每个课程建立文件夹
 				String courseName;
+				String originCourseName = course.html();
 				if (rootPath == "") {
-					courseName = course.html();
+					courseName = originCourseName;
 				} else {
 					courseName = rootPath + "/";
-					courseName += course.html();
+					courseName += originCourseName;
 				}
 				courseName = courseName.toString();
 				File courseDir = new File(courseName);
@@ -137,32 +165,91 @@ public class MyThu implements ActionListener {
 					courseDir.mkdir();
 				}
 				Matcher match = pattern.matcher(course.attr("href"));
+
 				while (match.find()) {
 					String course_id = match.group();
-					HttpGet courseWare = new HttpGet(
-							"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
-									+ course_id);
-					HttpResponse courseWareResponse = httpclient
-							.execute(courseWare);
-					String courseWarePage = EntityUtils
-							.toString(courseWareResponse.getEntity());
-					Document courseWarePageDOM = Jsoup.parse(courseWarePage);
-					Elements courseWares = courseWarePageDOM
-							.select("a[href~=.*uploadFile.*]");
-					Iterator<Element> courseWaresIterator = courseWares
-							.iterator();
-					System.out.println("下载到文件夹  " + courseName + "......");
-					while (courseWaresIterator.hasNext()) {
-						Element courseWaresLink = courseWaresIterator.next();
-						String courseWarePath = courseWaresLink.attr("href");
-						Downloader thread = new Downloader(httpclient,
-								courseWarePath, courseName);
-						thread.start();
+					if (cmd.equals("开始")) {
+						HttpGet courseWare = new HttpGet(
+								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
+										+ course_id);
+						HttpResponse courseWareResponse = httpclient
+								.execute(courseWare);
+						String courseWarePage = EntityUtils
+								.toString(courseWareResponse.getEntity());
+						Document courseWarePageDOM = Jsoup
+								.parse(courseWarePage);
+						Elements courseWares = courseWarePageDOM
+								.select("a[href~=.*uploadFile.*]");
+						Iterator<Element> courseWaresIterator = courseWares
+								.iterator();
+						System.out.println("下载到文件夹  " + courseName + "......");
+						while (courseWaresIterator.hasNext()) {
+							Element courseWaresLink = courseWaresIterator
+									.next();
+							String courseWarePath = courseWaresLink
+									.attr("href");
+							Downloader thread = new Downloader(httpclient,
+									courseWarePath, courseName);
+							thread.start();
+						}
+					}
+					if (cmd.equals("查看戴德兰")) {
+						HttpGet courseHomwork = new HttpGet(
+								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="
+										+ course_id);
+						HttpResponse courseHomeworkResponse = httpclient
+								.execute(courseHomwork);
+						String courseHomeworkPage = EntityUtils
+								.toString(courseHomeworkResponse.getEntity());
+						Document courseHomeworkPageDOM = Jsoup
+								.parse(courseHomeworkPage);
+						JLabel courseNameLabel = new JLabel(originCourseName);
+						homeworkContainer.add(courseNameLabel);
+						JTextArea courseHomeworkTextArea = new JTextArea();
+						courseHomeworkTextArea.setEditable(false);
+						/*
+						 * Elements courseHomeworkNames = courseHomeworkPageDOM
+						 * .select("tr.tr2 > td > a"); Iterator<Element>
+						 * courseHomeworkNamesIterator = courseHomeworkNames
+						 * .iterator(); JLabel courseNameLabel = new
+						 * JLabel(originCourseName);
+						 * homeworkContainer.add(courseNameLabel); JTextArea
+						 * courseHomeworkTextArea = new JTextArea();
+						 * courseHomeworkTextArea.setEditable(false); while
+						 * (courseHomeworkNamesIterator.hasNext()) { String
+						 * courseHomeworkName = courseHomeworkNamesIterator
+						 * .next().html(); //
+						 * System.out.println(courseHomeworkName);
+						 * courseHomeworkTextArea.append(courseHomeworkName); }
+						 */
+						Elements courseHomeworkDeadlines = courseHomeworkPageDOM
+								.select("tr.tr2 > td:eq(2)");
+						Iterator<Element> courseHomeworkDeadlinesIterator = courseHomeworkDeadlines
+								.iterator();
+						int count = 0;
+						while (courseHomeworkDeadlinesIterator.hasNext()) {
+							String courseHomeworkDeadline = courseHomeworkDeadlinesIterator
+									.next().html();
+							// System.out.println(courseHomeworkDeadline);
+							if (courseHomeworkDeadline.compareTo(now) >= 0) {
+								courseHomeworkTextArea
+										.append(courseHomeworkDeadline + "|");
+								count++;
+							}
+						}
+						courseHomeworkTextArea.setText("总共有 " + count
+								+ " 个作业要截止: "
+								+ courseHomeworkTextArea.getText());
+						homeworkContainer.add(courseHomeworkTextArea);
 					}
 				}
 			}
 		} catch (Exception e1) {
 			System.out.println(e1.getMessage());
+		}
+		if (cmd.equals("查看戴德兰")) {
+			// homeworkFrame.add(splitPane);
+			homeworkFrame.setVisible(true);
 		}
 	}
 
