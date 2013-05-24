@@ -74,7 +74,7 @@ public class MyThu implements ActionListener {
 		Container contentPane = f.getContentPane();
 		contentPane.setLayout(new GridLayout(3, 2));
 
-		JButton rootPath = new JButton("设置根目录" + path);
+		JButton rootPath = new JButton("设置根目录(默认记住的目录)" + path);
 		rootPath.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser jc = new JFileChooser();
@@ -105,7 +105,7 @@ public class MyThu implements ActionListener {
 		contentPane.add(deadline);
 		deadline.addActionListener(this);
 
-		f.setBounds(new Rectangle(200, 300));
+		f.setBounds(100, 200, 300, 200);
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
 		f.addWindowListener(new WindowAdapter() {
