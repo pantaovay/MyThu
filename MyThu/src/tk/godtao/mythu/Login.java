@@ -55,7 +55,6 @@ public class Login implements ActionListener {
 			remember.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (e.getActionCommand().equals("记住密码")) {
-						// System.out.println("呵呵");
 						rememberPass = true;
 					}
 				}
@@ -98,7 +97,6 @@ public class Login implements ActionListener {
 				} else {
 					JOptionPane.showMessageDialog(this.d, "用户名或密码错误",
 							"MyThu 错误", JOptionPane.WARNING_MESSAGE);
-					// userid.setText("");
 					userpass.setText("");
 				}
 			} catch (Exception e1) {

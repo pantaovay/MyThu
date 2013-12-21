@@ -101,7 +101,7 @@ public class MyThu implements ActionListener {
 		contentPane.add(begin);
 		begin.addActionListener(this);
 
-		JButton deadline = new JButton("查看戴德兰");
+		JButton deadline = new JButton("查看作业");
 		contentPane.add(deadline);
 		deadline.addActionListener(this);
 
@@ -119,23 +119,16 @@ public class MyThu implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		f.dispose();
 		String cmd = e.getActionCommand();
-		// System.out.println(cmd);
 
 		Date today = new Date();
 		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-		// System.out.println(f.format(today));
 
 		String now = f.format(today);
 
-		JFrame homeworkFrame = new JFrame("戴德兰");
+		JFrame homeworkFrame = new JFrame("作业");
 		Container homeworkContainer = homeworkFrame.getContentPane();
 		homeworkContainer.setLayout(new GridLayout(20, 2));
 		homeworkFrame.setBounds(new Rectangle(600, 500));
-		// JScrollPane scrollPane = new JScrollPane();
-		// JList list = new JList();
-		// JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-		// scrollPane, list);
-		// splitPane.setContinuousLayout(true);
 		try {
 			HttpGet httpGet = new HttpGet(
 					"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
@@ -192,7 +185,7 @@ public class MyThu implements ActionListener {
 							thread.start();
 						}
 					}
-					if (cmd.equals("查看戴德兰")) {
+					if (cmd.equals("查看作业")) {
 						HttpGet courseHomwork = new HttpGet(
 								"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="
 										+ course_id);
@@ -206,21 +199,6 @@ public class MyThu implements ActionListener {
 						homeworkContainer.add(courseNameLabel);
 						JTextArea courseHomeworkTextArea = new JTextArea();
 						courseHomeworkTextArea.setEditable(false);
-						/*
-						 * Elements courseHomeworkNames = courseHomeworkPageDOM
-						 * .select("tr.tr2 > td > a"); Iterator<Element>
-						 * courseHomeworkNamesIterator = courseHomeworkNames
-						 * .iterator(); JLabel courseNameLabel = new
-						 * JLabel(originCourseName);
-						 * homeworkContainer.add(courseNameLabel); JTextArea
-						 * courseHomeworkTextArea = new JTextArea();
-						 * courseHomeworkTextArea.setEditable(false); while
-						 * (courseHomeworkNamesIterator.hasNext()) { String
-						 * courseHomeworkName = courseHomeworkNamesIterator
-						 * .next().html(); //
-						 * System.out.println(courseHomeworkName);
-						 * courseHomeworkTextArea.append(courseHomeworkName); }
-						 */
 						Elements courseHomeworkDeadlines = courseHomeworkPageDOM
 								.select("tr.tr2 > td:eq(2)");
 						Iterator<Element> courseHomeworkDeadlinesIterator = courseHomeworkDeadlines
@@ -229,7 +207,6 @@ public class MyThu implements ActionListener {
 						while (courseHomeworkDeadlinesIterator.hasNext()) {
 							String courseHomeworkDeadline = courseHomeworkDeadlinesIterator
 									.next().html();
-							// System.out.println(courseHomeworkDeadline);
 							if (courseHomeworkDeadline.compareTo(now) >= 0) {
 								courseHomeworkTextArea
 										.append(courseHomeworkDeadline + "|");
@@ -246,8 +223,7 @@ public class MyThu implements ActionListener {
 		} catch (Exception e1) {
 			System.out.println(e1.getMessage());
 		}
-		if (cmd.equals("查看戴德兰")) {
-			// homeworkFrame.add(splitPane);
+		if (cmd.equals("查看作业")) {
 			homeworkFrame.setVisible(true);
 		}
 	}

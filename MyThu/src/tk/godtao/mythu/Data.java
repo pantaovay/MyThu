@@ -18,8 +18,6 @@ public class Data {
 			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);
-			/*statement.executeUpdate("insert into user values('" + username
-					+ "', '" + Data.sha1(userpass) + "')");*/
 			statement.executeUpdate("insert into user values('" + username
 					+ "', '" + userpass + "', '" + path + "')");
 		} catch (SQLException e) {
