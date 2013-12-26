@@ -1,6 +1,12 @@
 package iecoder.mythu;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -33,13 +39,13 @@ public class Course {
 	public Course(String courseId, String courseName) throws ClientProtocolException, IOException {
 		this.courseId = courseId;
 		this.courseName = courseName;
-		this.setHomework();
+		this.homeWork = new ArrayList<Homework>();
 	}
 	
 	/*
 	 * 设置课程的作业列表
 	 */
-	private void setHomework() throws ClientProtocolException, IOException {
+	public void setHomework() throws ClientProtocolException, IOException {
 		HttpGet courseHomwork = new HttpGet(
 				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id=" + this.courseId);
 		HttpResponse courseHomeworkResponse = Http.httpClient.execute(courseHomwork);
@@ -69,6 +75,13 @@ public class Course {
 	 * @return
 	 */
 	public void getCourseware() throws ClientProtocolException, IOException {
+		// 下载的绝对路径
+		String coursePath = WindowMain.rootPath + '/' + this.courseName;
+		// 创建课程目录
+		File courseDir = new File(coursePath);
+		if (!courseDir.isDirectory()) {
+			courseDir.mkdir();
+		}
 		HttpGet courseWare = new HttpGet(
 				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/download.jsp?course_id="
 						+ this.courseId);
@@ -80,20 +93,19 @@ public class Course {
 				.select("a[href~=.*uploadFile.*]");
 		Iterator<Element> courseWaresIterator = courseWares.iterator();
 		// TODO 将输出导入到下载课件的GUI里
-		System.out.println("下载到 " + this.courseName + "......");
+		System.out.println("下载到 " + coursePath + "......");
 		while (courseWaresIterator.hasNext()) {
 			Element courseWaresLink = courseWaresIterator.next();
 			String courseWarePath = courseWaresLink.attr("href");
-			Downloader thread = new Downloader(courseWarePath, this.courseName);
+			Downloader thread = new Downloader(courseWarePath, coursePath);
 			thread.start();
 		}
 	}
 
 	/*
-	 * 获取课程IDs，名字和存储路径
+	 * 抓取课程信息存入数据库
 	 */
-	/*public static ArrayList<Course> getCourseIds() throws ClientProtocolException, IOException {
-		ArrayList<Course> result = new ArrayList<Course>();
+	public static void setCourses() throws ClientProtocolException, IOException, ClassNotFoundException {
 		HttpGet httpGet = new HttpGet(
 				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 		HttpResponse courseResponse = Http.httpClient.execute(httpGet);
@@ -105,24 +117,74 @@ public class Course {
 			String regEx = "\\d+";
 			Pattern pattern = Pattern.compile(regEx);
 			Element course = coursesIterator.next();
-			String courseName;
-			String originCourseName = course.html();
-			if (WindowMain.rootPath == "") {
-				courseName = originCourseName;
-			} else {
-				courseName = WindowMain.rootPath + "/";
-				courseName += originCourseName;
-			}
-			courseName = courseName.toString();
+			String courseName = course.html().toString();
 			Matcher match = pattern.matcher(course.attr("href"));
-			
 			while(match.find()) {
-				result.add(new Course(match.group(), courseName, originCourseName));
+				insert(match.group(), courseName);
 			}
 		}
-		return result;
-	}*/
+	}
 	
-	
+	/*
+	 * 插入数据
+	 * @param courseId 课程ID
+	 * @param courseName 课程名
+	 */
+	private static void insert(String courseId, String courseName) throws ClassNotFoundException {
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);
+			// 检查是否 已存在，不存在课程ID才插入
+			ResultSet result = statement.executeQuery("SELECT * FROM course WHERE courseid=" + courseId);
+			if(!result.next()) {
+				System.out.println("test");
+				statement.executeUpdate("INSERT INTO course values('" + courseId + "', '" + courseName + "')");
+			}
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+	}
+
+	/*
+	 * 获取课程信息
+	 * @return 课程信息数组
+	 */
+	public static ArrayList<Course> getCourses() throws ClassNotFoundException, ClientProtocolException, IOException {
+		// 课程数组
+		ArrayList<Course> courses = new ArrayList<Course>();
+		
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);
+
+			ResultSet result = statement.executeQuery("SELECT * FROM course");
+			while (result.next()) {
+				courses.add(new Course(result.getString("courseid"), result.getString("coursename")));
+			}
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		return courses;
+	}
 
 }

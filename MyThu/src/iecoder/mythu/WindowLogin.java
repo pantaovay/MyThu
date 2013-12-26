@@ -88,6 +88,9 @@ public class WindowLogin implements ActionListener {
 				WindowMain mythu = new WindowMain();
 				if (WindowMain.login) {
 					this.d.dispose();
+					// 获取课程信息存入数据库
+					Course.setCourses();
+					// 绘制主窗口
 					mythu.MyThuWindow("");
 				} else {
 					JOptionPane.showMessageDialog(this.d, "用户名或密码错误",

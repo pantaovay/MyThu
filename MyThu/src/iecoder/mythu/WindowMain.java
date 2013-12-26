@@ -81,6 +81,10 @@ public class WindowMain implements ActionListener {
 		JButton deadline = new JButton("查看作业");
 		contentPane.add(deadline);
 		deadline.addActionListener(this);
+		
+		JButton clear = new JButton("clear");
+		contentPane.add(clear);
+		clear.addActionListener(this);
 
 		f.setBounds(100, 200, 300, 200);
 		f.getRootPane().setDefaultButton(begin);
@@ -98,6 +102,9 @@ public class WindowMain implements ActionListener {
 		f.dispose();
 		// 获取命令
 		String cmd = e.getActionCommand();
+		if(cmd == "清除") {
+			// fuck
+		}
 		// TODO 作业的GUI
 		JFrame homeworkFrame = new JFrame("作业");
 		Container homeworkContainer = homeworkFrame.getContentPane();
@@ -105,33 +112,25 @@ public class WindowMain implements ActionListener {
 		homeworkFrame.setBounds(new Rectangle(600, 500));
 		ArrayList<Course> result = new ArrayList<Course>();
 		try {
-			result = Course.getCourseIds();
+			try {
+				result = Course.getCourses();
+			} catch (ClassNotFoundException e1) {
+				e1.printStackTrace();
+			}
 		} catch (ClientProtocolException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Iterator<Course> resultIter = result.iterator();
 		while(resultIter.hasNext()) {
 			Course course = resultIter.next();
-			String courseId = course.courseId;
-			String courseName = course.courseName;
-			String originCourseName = course.originCourseName;
-			
-			// 创建课程目录			
-			File courseDir = new File(courseName);
-			if(!courseDir.isDirectory()) {
-				courseDir.mkdir();
-			}
 			// 响应事件
 			if (cmd.equals("开始")) {
 				// 下载课件
 				// TODO 下载的界面
-				Course courseObj = new Course(courseId, courseName);
 				try {
-					courseObj.getCourseware();
+					course.getCourseware();
 				} catch (ClientProtocolException e1) {
 					e1.printStackTrace();
 				} catch (IOException e1) {
@@ -140,25 +139,24 @@ public class WindowMain implements ActionListener {
 			}
 			if (cmd.equals("查看作业")) {
 				// TODO GUI
-//				JLabel courseNameLabel = new JLabel(originCourseName);
-//				homeworkContainer.add(courseNameLabel);
-//				JTextArea courseHomeworkTextArea = new JTextArea();
-//				courseHomeworkTextArea.setEditable(false);
-//				Homework homework = new Homework(courseId);
-//				ArrayList<String> result1 = new ArrayList<String>();
-//				try {
-//					result1 = homework.getHomework();
-//				} catch (ClientProtocolException e1) {
-//					e1.printStackTrace();
-//				} catch (IOException e1) {
-//					e1.printStackTrace();
-//				}
-//				Iterator<String> iter = result1.iterator();
-//				while(iter.hasNext()) {
-//					courseHomeworkTextArea.append(iter.next() + " ");
-//				}
-//				courseHomeworkTextArea.setText("共有 " + result1.size() + " 未交作业ֹ" + courseHomeworkTextArea.getText());
-//				homeworkContainer.add(courseHomeworkTextArea);
+				JLabel courseNameLabel = new JLabel(course.courseName);
+				homeworkContainer.add(courseNameLabel);
+				JTextArea courseHomeworkTextArea = new JTextArea();
+				courseHomeworkTextArea.setEditable(false);
+				try {
+					course.setHomework();
+				} catch (ClientProtocolException e1) {
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				ArrayList<Homework> homework = course.homeWork;
+				Iterator<Homework> iter = homework.iterator();
+				while(iter.hasNext()) {
+					courseHomeworkTextArea.append(iter.next().end + " ");
+				}
+				courseHomeworkTextArea.setText("共有 " + homework.size() + " 未交作业ֹ" + courseHomeworkTextArea.getText());
+				homeworkContainer.add(courseHomeworkTextArea);
 			}
 		}
 		if (cmd.equals("查看作业")) {
