@@ -22,7 +22,9 @@ public class UserInfo {
 			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);
-			statement.executeUpdate("insert into user values('" + userName + "', '" + userPass + "', '" + path + "')");
+			// 先清空用户表
+			statement.executeUpdate("DELETE FROM user");
+			statement.executeUpdate("INSERT INTO user VALUES('" + userName + "', '" + userPass + "', '" + path + "')");
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
 		} finally {
@@ -52,7 +54,7 @@ public class UserInfo {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);
 
-			ResultSet result = statement.executeQuery("select * from user limit 0, 1");
+			ResultSet result = statement.executeQuery("SELECT * FROM user LIMIT 0, 1");
 			while (result.next()) {
 				user[0] = result.getString("userid");
 				user[1] = result.getString("userpass");
@@ -69,5 +71,30 @@ public class UserInfo {
 			}
 		}
 		return user;
+	}
+	
+	/*
+	 * 清除认证信息
+	 */
+	public static void empty() throws ClassNotFoundException {
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);
+
+			statement.executeUpdate("DELETE FROM user");
+			statement.executeUpdate("DELETE FROM course");
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				System.err.println(e.getMessage());
+			}
+		}
 	}
 }

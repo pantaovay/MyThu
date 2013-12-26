@@ -22,10 +22,13 @@ public class HomeworkTray {
 		trayIcon.setImageAutoSize(true);
 		final SystemTray tray = SystemTray.getSystemTray();
 
-		MenuItem aboutItem = new MenuItem("About");
-		MenuItem homeworkItem = new MenuItem("Homework");
-		MenuItem exitItem = new MenuItem("Exit");
+		MenuItem mainItem = new MenuItem("主窗口");
+		MenuItem aboutItem = new MenuItem("关于我们");
+		MenuItem homeworkItem = new MenuItem("查看作业");
+		MenuItem exitItem = new MenuItem("退出");
 
+		popup.add(mainItem);
+		popup.addSeparator();
 		popup.add(aboutItem);
 		popup.addSeparator();
 		popup.add(homeworkItem);
@@ -44,10 +47,26 @@ public class HomeworkTray {
 		// 双击系统图标事件
 		trayIcon.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null,"清华大学网络学堂助手——IECoder");
+				//JOptionPane.showMessageDialog(null,"清华大学网络学堂助手——IECoder");
+				try {
+					new WindowMain();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 
+		// 查看主窗口事件
+		trayIcon.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new WindowMain();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		// 关于我们事件
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -58,7 +77,7 @@ public class HomeworkTray {
 		// 显示未交作业
 		homeworkItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// 哈哈 TODO 作业GUI
+				WindowHomeworkInfo.createUI();
 			}
 		});
 		

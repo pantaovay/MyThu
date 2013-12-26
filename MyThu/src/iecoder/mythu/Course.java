@@ -76,7 +76,13 @@ public class Course {
 	 */
 	public void getCourseware() throws ClientProtocolException, IOException {
 		// 下载的绝对路径
-		String coursePath = WindowMain.rootPath + '/' + this.courseName;
+		String coursePath;
+		if(WindowMain.rootPath == "") {
+			// 默认当前目录
+			coursePath = this.courseName;
+		} else {
+			coursePath = WindowMain.rootPath + '/' + this.courseName;
+		}
 		// 创建课程目录
 		File courseDir = new File(coursePath);
 		if (!courseDir.isDirectory()) {
@@ -92,8 +98,7 @@ public class Course {
 		Elements courseWares = courseWarePageDOM
 				.select("a[href~=.*uploadFile.*]");
 		Iterator<Element> courseWaresIterator = courseWares.iterator();
-		// TODO 将输出导入到下载课件的GUI里
-		System.out.println("下载到 " + coursePath + "......");
+		WindowDownloadInfo.addInfo("下载到 " + coursePath + "......");
 		while (courseWaresIterator.hasNext()) {
 			Element courseWaresLink = courseWaresIterator.next();
 			String courseWarePath = courseWaresLink.attr("href");
@@ -140,7 +145,6 @@ public class Course {
 			// 检查是否 已存在，不存在课程ID才插入
 			ResultSet result = statement.executeQuery("SELECT * FROM course WHERE courseid=" + courseId);
 			if(!result.next()) {
-				System.out.println("test");
 				statement.executeUpdate("INSERT INTO course values('" + courseId + "', '" + courseName + "')");
 			}
 		} catch (SQLException e) {

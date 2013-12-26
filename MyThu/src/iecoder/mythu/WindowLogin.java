@@ -11,11 +11,13 @@ public class WindowLogin implements ActionListener {
 	private JButton confirm, concel;
 	private Container dialogPane;
 	private JDialog d;
+	// 是否记住密码
 	public static boolean rememberPass = false;
 
 	public WindowLogin() throws Exception {
 		// 获得用户信息
 		String[] userInfo = UserInfo.getUserInfo();
+		// 数据库中没有用户信息，则渲染登陆窗口
 		if (userInfo[0].isEmpty()) {
 			this.d = new JDialog();
 			d.setTitle("MyThu 登陆");
@@ -47,7 +49,7 @@ public class WindowLogin implements ActionListener {
 			remember.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					if (e.getActionCommand().equals("记住密码")) {
-						rememberPass = true;
+						WindowLogin.rememberPass = true;
 					}
 				}
 
@@ -69,9 +71,11 @@ public class WindowLogin implements ActionListener {
 			// 设置Login属性
 			Login.userId = userInfo[0];
 			Login.userPass = userInfo[1];
-			WindowMain mythu = new WindowMain();
+			WindowMain mythuMain = new WindowMain();
 			if (WindowMain.login) {
-				mythu.MyThuWindow(userInfo[2]);
+				// 传递设置的存储路径
+				WindowLogin.rememberPass = true;
+				mythuMain.MyThuWindow(userInfo[2]);
 			} else {
 				JOptionPane.showMessageDialog(null, "用户名或密码错误", "MyThu 错误",
 						JOptionPane.WARNING_MESSAGE);
@@ -87,15 +91,18 @@ public class WindowLogin implements ActionListener {
 			try {
 				WindowMain mythu = new WindowMain();
 				if (WindowMain.login) {
+					// 插入用户数据
+					UserInfo.insert(Login.userId, Login.userPass,WindowMain.rootPath);
+					// 销毁登陆窗口
 					this.d.dispose();
-					// 获取课程信息存入数据库
+					// 获取课程信息存入数据库  
 					Course.setCourses();
 					// 绘制主窗口
 					mythu.MyThuWindow("");
 				} else {
 					JOptionPane.showMessageDialog(this.d, "用户名或密码错误",
 							"MyThu 错误", JOptionPane.WARNING_MESSAGE);
-					userPass.setText("");
+					this.userPass.setText("");
 				}
 			} catch (Exception e1) {
 				e1.printStackTrace();
