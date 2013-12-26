@@ -8,23 +8,19 @@ import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 
 public class Downloader extends Thread {
-	public HttpClient httpClient;
 	public String courseWarePath;
 	public String courseDir;
 
 	/*
 	 * 构造函数
-	 * @param httpClient HttpClient实例
 	 * @param courseWarePath 课件链接
 	 * @param courseDir 课件下载目标目录
 	 */
-	public Downloader(HttpClient httpClient, String courseWarePath, String courseDir) {
-		this.httpClient = httpClient;
+	public Downloader(String courseWarePath, String courseDir) {
 		this.courseWarePath = courseWarePath;
 		this.courseDir = courseDir;
 	}
@@ -61,7 +57,7 @@ public class Downloader extends Thread {
 	public void run() {
 		try {
 			HttpGet courseWareFile = new HttpGet("http://learn.tsinghua.edu.cn" + this.courseWarePath);
-			HttpResponse response = this.httpClient.execute(courseWareFile);
+			HttpResponse response = Http.httpClient.execute(courseWareFile);
 			// 获取文件名
 			String filename = Downloader.getFileName(response);
 			File file = new File(this.courseDir + "/" + filename);

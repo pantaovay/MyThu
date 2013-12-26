@@ -8,7 +8,7 @@ import java.sql.Statement;
 /*
  * 数据库操作类，保存用户名和密码等
  */
-public class Data {
+public class UserInfo {
 	/*
 	 * 插入数据
 	 * @param userName 用户名
@@ -39,7 +39,7 @@ public class Data {
 	 * 验证登陆信息
 	 * @return 用户信息：用户名、密码和存储路径
 	 */
-	public static String[] verify() throws ClassNotFoundException {
+	public static String[] getUserInfo() throws ClassNotFoundException {
 		String[] user = new String[3];
 		user[0] = "";
 		user[1] = "";

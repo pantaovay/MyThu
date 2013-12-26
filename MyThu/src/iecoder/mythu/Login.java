@@ -1,112 +1,41 @@
 package iecoder.mythu;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
-public class Login implements ActionListener {
-	private static final boolean shouldFill = true;
-	private static final boolean shouldWeightX = false;
-	JTextField userid;
-	JPasswordField userpass;
-	public static String name;
-	public static String pass;
-	JButton confirm, concel;
-	Container dialogPane;
-	JDialog d;
-	public static boolean rememberPass = false;
-
-	public Login() throws Exception {
-		String[] user = Data.verify();
-		if (user[0].isEmpty()) {
-			this.d = new JDialog();
-			d.setTitle("MyThu 登陆");
-			this.dialogPane = d.getContentPane();
-			this.dialogPane.setLayout(new GridBagLayout());
-			GridBagConstraints c = new GridBagConstraints();
-			if (shouldFill) {
-				c.fill = GridBagConstraints.HORIZONTAL;
-			}
-			if (shouldWeightX) {
-				c.weightx = 0.5;
-			}
-			c.gridx = 0;
-			c.gridy = 0;
-			this.dialogPane.add(new JLabel("用户名"), c);
-
-			this.userid = new JTextField(20);
-			c.gridx = 1;
-			c.gridy = 0;
-			this.dialogPane.add(this.userid, c);
-
-			c.gridx = 0;
-			c.gridy = 1;
-			this.dialogPane.add(new JLabel("密  码"), c);
-			this.userpass = new JPasswordField(20);
-			c.gridx = 1;
-			c.gridy = 1;
-			this.dialogPane.add(this.userpass, c);
-
-			JRadioButton remember = new JRadioButton("记住密码");
-			c.gridx = 1;
-			c.gridy = 2;
-			this.dialogPane.add(remember, c);
-			remember.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (e.getActionCommand().equals("记住密码")) {
-						rememberPass = true;
-					}
-				}
-
-			});
-			this.confirm = new JButton("确定");
-			this.concel = new JButton("退出");
-			c.gridx = 0;
-			c.gridy = 3;
-			this.dialogPane.add(this.concel, c);
-			c.gridx = 1;
-			c.gridy = 3;
-			this.dialogPane.add(this.confirm, c);
-			this.confirm.addActionListener(this);
-			this.concel.addActionListener(this);
-			this.d.setBounds(100, 200, 300, 200);
-			this.d.getRootPane().setDefaultButton(confirm);
-			this.d.setVisible(true);
-		} else {
-			MyThu mythu = new MyThu(user[0], user[1]);
-			if (MyThu.login) {
-				mythu.MyThuWindow(user[2]);
-			} else {
-				JOptionPane.showMessageDialog(null, "用户名或密码错误", "MyThu 错误",
-						JOptionPane.WARNING_MESSAGE);
+/*
+ * 登陆类，提供用户登陆验证
+ */
+public class Login {
+	public static String userId;
+	public static String userPass;
+	
+	public static void checkLogin() throws Exception {
+		HttpPost httpPost = new HttpPost(
+				"https://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp");
+		List<NameValuePair> login = new ArrayList<NameValuePair>();
+		login.add(new BasicNameValuePair("userid", userId));
+		login.add(new BasicNameValuePair("userpass", userPass));
+		login.add(new BasicNameValuePair("submit1", "提交"));
+		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(login, "utf-8");
+		httpPost.setEntity(entity);
+		HttpResponse loginResponse = Http.httpClient.execute(httpPost);
+		HttpEntity loginEntity = loginResponse.getEntity();
+		if (loginEntity != null) {
+			String loginResult = EntityUtils.toString(loginEntity);
+			if (loginResult.indexOf("loginteacher_action.jsp") != -1) {
+				WindowMain.login = true;
 			}
 		}
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		String cmd = e.getActionCommand();
-		if (cmd.equals("确定")) {
-			Login.name = this.userid.getText();
-			Login.pass = new String(this.userpass.getPassword());
-			try {
-				MyThu mythu = new MyThu(name, pass);
-				if (MyThu.login) {
-					this.d.dispose();
-					mythu.MyThuWindow("");
-				} else {
-					JOptionPane.showMessageDialog(this.d, "用户名或密码错误",
-							"MyThu 错误", JOptionPane.WARNING_MESSAGE);
-					userpass.setText("");
-				}
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-			return;
-		}
-		if (cmd.equals("退出")) {
-			System.exit(0);
-		}
+		EntityUtils.consume(loginEntity);
 	}
 
 }
