@@ -38,12 +38,6 @@ public class WindowMain implements ActionListener {
 	 */
 	public void MyThuWindow(String path) {
 		WindowMain.rootPath = path;
-		// 系统监控
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				HomeworkTray.createUI();
-			}
-		});
 
 		f = new JFrame("MyThu");
 		Container contentPane = f.getContentPane();
@@ -91,9 +85,16 @@ public class WindowMain implements ActionListener {
 		f.setBounds(100, 200, 300, 200);
 		f.getRootPane().setDefaultButton(begin);
 		f.pack();
+		// 关闭窗口改成最小化
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				System.exit(0);
+				//System.exit(0);
+				// 系统监控
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						HomeworkTray.createUI();
+					}
+				});
 			}
 		});
 		f.setVisible(true);
@@ -101,7 +102,7 @@ public class WindowMain implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		// 销毁主窗口
-		f.dispose();
+		//f.dispose();
 		// 获取命令
 		String cmd = e.getActionCommand();
 		switch (cmd) {
@@ -119,30 +120,41 @@ public class WindowMain implements ActionListener {
 			}
 			break;
 		case "开始":
-			WindowDownloadInfo.createUI();
-			ArrayList<Course> result = new ArrayList<Course>();
-			try {
-				try {
-					result = Course.getCourses();
-				} catch (ClassNotFoundException e1) {
-					e1.printStackTrace();
+			this.begin.setText("下载ing...");
+			(new Thread() {
+				public void run() {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							//WindowDownloadInfo.createUI();
+							ThreadGroup g = new ThreadGroup("downloder");
+							ArrayList<Course> result = new ArrayList<Course>();
+							try {
+								try {
+									result = Course.getCourses();
+								} catch (ClassNotFoundException e1) {
+									e1.printStackTrace();
+								}
+							} catch (ClientProtocolException e1) {
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+							Iterator<Course> resultIter = result.iterator();
+							while (resultIter.hasNext()) {
+								Course course = resultIter.next();
+								try {
+									course.getCourseware(g);
+								} catch (ClientProtocolException e1) {
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
+							}
+							System.out.println(g.activeCount());
+						}
+					});
 				}
-			} catch (ClientProtocolException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			Iterator<Course> resultIter = result.iterator();
-			while (resultIter.hasNext()) {
-				Course course = resultIter.next();
-				try {
-					course.getCourseware();
-				} catch (ClientProtocolException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
+			}).start();
 			break;
 		case "查看作业":
 			WindowHomeworkInfo.createUI();

@@ -92,7 +92,9 @@ public class WindowLogin implements ActionListener {
 				WindowMain mythu = new WindowMain();
 				if (WindowMain.login) {
 					// 插入用户数据
-					UserInfo.insert(Login.userId, Login.userPass,WindowMain.rootPath);
+					if(WindowLogin.rememberPass == true) {
+						UserInfo.insert(Login.userId, Login.userPass,WindowMain.rootPath);
+					}
 					// 销毁登陆窗口
 					this.d.dispose();
 					// 获取课程信息存入数据库  

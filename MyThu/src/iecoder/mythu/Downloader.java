@@ -20,7 +20,8 @@ public class Downloader extends Thread {
 	 * @param courseWarePath 课件链接
 	 * @param courseDir 课件下载目标目录
 	 */
-	public Downloader(String courseWarePath, String courseDir) {
+	public Downloader(ThreadGroup g, String courseWarePath, String courseDir) {
+		super(g, courseDir);
 		this.courseWarePath = courseWarePath;
 		this.courseDir = courseDir;
 	}
@@ -76,6 +77,15 @@ public class Downloader extends Thread {
 				WindowDownloadInfo.addInfo(filename + " exists.");
 			}
 			EntityUtils.consume(response.getEntity());
+			/*ThreadGroup group = Thread.currentThread().getThreadGroup();
+			group.list();
+			ThreadGroup topGroup = null;
+			// 取得此线程组的顶级父线程
+			if((group = group.getParent()) != null) {
+				topGroup = group;
+			}
+			// 将有关此线程组的信息打印到标准输出
+			topGroup.list();*/
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			System.exit(-1);

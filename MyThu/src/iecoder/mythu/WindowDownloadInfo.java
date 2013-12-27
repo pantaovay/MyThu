@@ -21,7 +21,7 @@ public class WindowDownloadInfo {
 	 */
 	public static void createUI() {
 		WindowDownloadInfo.downloadFrame = new JFrame("下载课件");
-		WindowDownloadInfo.downloadFrame.setVisible(true);
+		//WindowDownloadInfo.downloadFrame.setVisible(true);
 		WindowDownloadInfo.downloadContainer = downloadFrame.getContentPane();
 		WindowDownloadInfo.downloadContainer.setLayout(new GridLayout(20, 2));
 		WindowDownloadInfo.downloadFrame.setBounds(new Rectangle(600, 500));
@@ -38,14 +38,9 @@ public class WindowDownloadInfo {
 	 * 更新下载信息
 	 */
 	public static void addInfo(final String str) {
-		// WindowDownloadInfo.downloadTextArea.append(str + '\n');
-		// WindowDownloadInfo.downloadTextArea.setCaretPosition(WindowDownloadInfo.downloadTextArea.getText().length()
-		// - 1);
-		// Runnable run = new UpdateDownloadInfo(str);
-		// Thread T = new Thread(run);
-		// T.start();
-		// WindowDownloadInfo.downloadTextArea.setCaretPosition(WindowDownloadInfo.downloadTextArea.getDocument().getLength());
-
+		/*
+		 * 多线程更新
+		 */
 		(new Thread() {
 			public void run() {
 				SwingUtilities.invokeLater(new Runnable() {

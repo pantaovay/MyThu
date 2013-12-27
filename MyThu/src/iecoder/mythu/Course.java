@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ public class Course {
 	public String courseId;
 	public String courseName;
 	public ArrayList<Homework> homeWork;
+	public static ExecutorService es = Executors.newCachedThreadPool();
 	
 	/*
 	 * 构造函数
@@ -74,7 +77,7 @@ public class Course {
 	 * 下载课件
 	 * @return
 	 */
-	public void getCourseware() throws ClientProtocolException, IOException {
+	public void getCourseware(ThreadGroup g) throws ClientProtocolException, IOException {
 		// 下载的绝对路径
 		String coursePath;
 		if(WindowMain.rootPath == "") {
@@ -102,8 +105,9 @@ public class Course {
 		while (courseWaresIterator.hasNext()) {
 			Element courseWaresLink = courseWaresIterator.next();
 			String courseWarePath = courseWaresLink.attr("href");
-			Downloader thread = new Downloader(courseWarePath, coursePath);
-			thread.start();
+			es.execute(new Downloader(g, courseWarePath, coursePath));
+			//Downloader thread = new Downloader(g, courseWarePath, coursePath);
+			//thread.start();
 		}
 	}
 
@@ -189,6 +193,31 @@ public class Course {
 			}
 		}
 		return courses;
+	}
+	
+	/*
+	 * 清除课程信息
+	 */
+	public static void empty() throws ClassNotFoundException {
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:MyThu.db");
+			Statement statement = connection.createStatement();
+			statement.setQueryTimeout(30);
+
+			// 清空课程
+			statement.executeUpdate("DELETE FROM course");
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				System.err.println(e.getMessage());
+			}
+		}
 	}
 
 }
