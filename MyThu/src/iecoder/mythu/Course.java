@@ -32,57 +32,85 @@ public class Course {
 	public ArrayList<Homework> homeWork;
 	public static ExecutorService es = Executors.newCachedThreadPool();
 	public static Integer courseNumber = 0;
-	
+
 	/*
 	 * 构造函数
-	 * @param courseId 课程唯一ID
-	 * @param originCourseName 课程名
 	 * 
+	 * @param courseId 课程唯一ID
+	 * 
+	 * @param originCourseName 课程名
 	 */
 
-	public Course(String courseId, String courseName) throws ClientProtocolException, IOException {
+	public Course(String courseId, String courseName)
+			throws ClientProtocolException, IOException {
 		this.courseId = courseId;
 		this.courseName = courseName;
 		this.homeWork = new ArrayList<Homework>();
 	}
-	
+
 	/*
 	 * 设置课程的作业列表
 	 */
 	public void setHomework() throws ClientProtocolException, IOException {
 		HttpGet courseHomwork = new HttpGet(
-				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id=" + this.courseId);
-		HttpResponse courseHomeworkResponse = Http.httpClient.execute(courseHomwork);
-		String courseHomeworkPage = EntityUtils.toString(courseHomeworkResponse.getEntity());
+				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id="
+						+ this.courseId);
+		HttpResponse courseHomeworkResponse = Http.httpClient
+				.execute(courseHomwork);
+		String courseHomeworkPage = EntityUtils.toString(courseHomeworkResponse
+				.getEntity());
 		Document courseHomeworkPageDOM = Jsoup.parse(courseHomeworkPage);
 		// 获取作业列表
-		Elements title = courseHomeworkPageDOM.select("tr.tr2 > td:eq(0) > a");
-		Elements start = courseHomeworkPageDOM.select("tr.tr2 > td:eq(1)");
-		Elements end = courseHomeworkPageDOM.select("tr.tr2 > td:eq(2)");
-		Elements isSubmitted = courseHomeworkPageDOM.select("tr.tr2 > td:eq(3)");
-		
+		Elements title = courseHomeworkPageDOM.select("tr.tr1 > td:eq(0) > a");
+		Elements start = courseHomeworkPageDOM.select("tr.tr1 > td:eq(1)");
+		Elements end = courseHomeworkPageDOM.select("tr.tr1 > td:eq(2)");
+		Elements isSubmitted = courseHomeworkPageDOM
+				.select("tr.tr1 > td:eq(3)");
+
 		// 遍历作业
 		int homeworkCount = title.size();
 		for (int i = 0; i < homeworkCount; i++) {
-			if (isSubmitted.get(i).html().trim() == "已经提交") {
-				this.homeWork.add(new Homework(title.get(i).html(), start.get(i)
-						.html(), end.get(i).html(), true));
+
+			if (isSubmitted.get(i).html().trim().compareTo("已经提交") == 0) {
+				this.homeWork.add(new Homework(title.get(i).html(), start
+						.get(i).html(), end.get(i).html(), true));
 			} else {
-				this.homeWork.add(new Homework(title.get(i).html(), start.get(i)
-						.html(), end.get(i).html(), false));
+				this.homeWork.add(new Homework(title.get(i).html(), start
+						.get(i).html(), end.get(i).html(), false));
 			}
 		}
+		// 获取作业列表
+		title = courseHomeworkPageDOM.select("tr.tr2 > td:eq(0) > a");
+		start = courseHomeworkPageDOM.select("tr.tr2 > td:eq(1)");
+		end = courseHomeworkPageDOM.select("tr.tr2 > td:eq(2)");
+		isSubmitted = courseHomeworkPageDOM.select("tr.tr2 > td:eq(3)");
+
+		// 遍历作业
+		homeworkCount = title.size();
+		for (int i = 0; i < homeworkCount; i++) {
+
+			if (isSubmitted.get(i).html().trim().compareTo("已经提交") == 0) {
+				this.homeWork.add(new Homework(title.get(i).html(), start
+						.get(i).html(), end.get(i).html(), true));
+			} else {
+				this.homeWork.add(new Homework(title.get(i).html(), start
+						.get(i).html(), end.get(i).html(), false));
+			}
+		}
+
 	}
 
 	/*
 	 * 下载课件
+	 * 
 	 * @return
 	 */
-	public void getCourseware(ThreadGroup g) throws ClientProtocolException, IOException {
+	public void getCourseware(ThreadGroup g) throws ClientProtocolException,
+			IOException {
 		Course.courseNumber -= 1;
 		// 下载的绝对路径
 		String coursePath;
-		if(WindowMain.rootPath == "") {
+		if (WindowMain.rootPath == "") {
 			// 默认当前目录
 			coursePath = this.courseName;
 		} else {
@@ -103,15 +131,16 @@ public class Course {
 		Elements courseWares = courseWarePageDOM
 				.select("a[href~=.*uploadFile.*]");
 		Iterator<Element> courseWaresIterator = courseWares.iterator();
-		//WindowDownloadInfo.addInfo("下载到 " + coursePath + "......");
+		// WindowDownloadInfo.addInfo("下载到 " + coursePath + "......");
 		while (courseWaresIterator.hasNext()) {
 			Element courseWaresLink = courseWaresIterator.next();
 			String courseWarePath = courseWaresLink.attr("href");
 			Course.es.execute(new Downloader(g, courseWarePath, coursePath));
-			//Downloader thread = new Downloader(g, courseWarePath, coursePath);
-			//thread.start();
+			// Downloader thread = new Downloader(g, courseWarePath,
+			// coursePath);
+			// thread.start();
 		}
-		if(Course.courseNumber == 0) {
+		if (Course.courseNumber == 0) {
 			// 停止添加
 			Course.es.shutdown();
 		}
@@ -120,7 +149,8 @@ public class Course {
 	/*
 	 * 抓取课程信息存入数据库
 	 */
-	public static void setCourses() throws ClientProtocolException, IOException, ClassNotFoundException {
+	public static void setCourses() throws ClientProtocolException,
+			IOException, ClassNotFoundException {
 		HttpGet httpGet = new HttpGet(
 				"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 		HttpResponse courseResponse = Http.httpClient.execute(httpGet);
@@ -134,18 +164,21 @@ public class Course {
 			Element course = coursesIterator.next();
 			String courseName = course.html().toString();
 			Matcher match = pattern.matcher(course.attr("href"));
-			while(match.find()) {
+			while (match.find()) {
 				insert(match.group(), courseName);
 			}
 		}
 	}
-	
+
 	/*
 	 * 插入数据
+	 * 
 	 * @param courseId 课程ID
+	 * 
 	 * @param courseName 课程名
 	 */
-	private static void insert(String courseId, String courseName) throws ClassNotFoundException {
+	private static void insert(String courseId, String courseName)
+			throws ClassNotFoundException {
 		Class.forName("org.sqlite.JDBC");
 		Connection connection = null;
 		try {
@@ -153,9 +186,12 @@ public class Course {
 			Statement statement = connection.createStatement();
 			statement.setQueryTimeout(30);
 			// 检查是否 已存在，不存在课程ID才插入
-			ResultSet result = statement.executeQuery("SELECT * FROM course WHERE courseid=" + courseId);
-			if(!result.next()) {
-				statement.executeUpdate("INSERT INTO course values('" + courseId + "', '" + courseName + "')");
+			ResultSet result = statement
+					.executeQuery("SELECT * FROM course WHERE courseid="
+							+ courseId);
+			if (!result.next()) {
+				statement.executeUpdate("INSERT INTO course values('"
+						+ courseId + "', '" + courseName + "')");
 			}
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
@@ -171,12 +207,14 @@ public class Course {
 
 	/*
 	 * 获取课程信息
+	 * 
 	 * @return 课程信息数组
 	 */
-	public static ArrayList<Course> getCourses() throws ClassNotFoundException, ClientProtocolException, IOException {
+	public static ArrayList<Course> getCourses() throws ClassNotFoundException,
+			ClientProtocolException, IOException {
 		// 课程数组
 		ArrayList<Course> courses = new ArrayList<Course>();
-		
+
 		Class.forName("org.sqlite.JDBC");
 		Connection connection = null;
 		try {
@@ -186,7 +224,8 @@ public class Course {
 
 			ResultSet result = statement.executeQuery("SELECT * FROM course");
 			while (result.next()) {
-				courses.add(new Course(result.getString("courseid"), result.getString("coursename")));
+				courses.add(new Course(result.getString("courseid"), result
+						.getString("coursename")));
 			}
 		} catch (SQLException e) {
 			System.err.println(e.getMessage());
@@ -200,7 +239,7 @@ public class Course {
 		}
 		return courses;
 	}
-	
+
 	/*
 	 * 清除课程信息
 	 */

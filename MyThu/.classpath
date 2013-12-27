@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src" />
-	<classpathentry kind="con"
-		path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/commons-codec-1.6.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/commons-logging-1.1.1.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/fluent-hc-4.2.5.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpclient-4.2.5.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpclient-cache-4.2.5.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpcore-4.2.4.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/httpcomponents-client-4.2.5/lib/httpmime-4.2.5.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/jsoup-1.7.2.jar" />
-	<classpathentry kind="lib"
-		path="C:/Users/godtao/Desktop/sqlite-jdbc-3.7.2.jar" />
-	<classpathentry kind="output" path="bin" />
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/fluent-hc-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/httpclient-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/httpclient-cache-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/httpcore-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/httpcomponents-client-4.2/httpmime-4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/jsoup-1.7.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/c3p0-0.9.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/quartz-2.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/quartz-jobs-2.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/slf4j-api-1.6.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/godtao/Desktop/MyThu/MyThu/class/quartz-2.2.1/lib/slf4j-log4j12-1.6.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

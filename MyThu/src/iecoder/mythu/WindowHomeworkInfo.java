@@ -4,7 +4,9 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.JFrame;
@@ -21,6 +23,10 @@ public class WindowHomeworkInfo {
 	 * 绘制作业窗口
 	 */
 	public static void createUI() {
+		// 当前时间
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+        String now = f.format(new Date());
+        
 		JFrame homeworkFrame = new JFrame("作业");
 		homeworkFrame.setVisible(true);
 		Container homeworkContainer = homeworkFrame.getContentPane();
@@ -56,10 +62,16 @@ public class WindowHomeworkInfo {
 			}
 			ArrayList<Homework> homework = course.homeWork;
 			Iterator<Homework> iter = homework.iterator();
+			int count = 0;
 			while (iter.hasNext()) {
-				courseHomeworkTextArea.append(iter.next().end + " ");
+				Homework tmp = iter.next();
+				if(tmp.end.compareTo(now) >= 0 && tmp.isSubmitted == false) {
+					courseHomeworkTextArea.append(" " + tmp.end + " ");
+					count++;
+				}
+				
 			}
-			courseHomeworkTextArea.setText("共有 " + homework.size() + " 未交作业ֹ"
+			courseHomeworkTextArea.setText("共有 " + count + " 未交作业ֹ"
 					+ courseHomeworkTextArea.getText());
 		}
 	}

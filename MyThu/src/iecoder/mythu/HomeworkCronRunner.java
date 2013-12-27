@@ -24,7 +24,7 @@ public class HomeworkCronRunner {
 		// 初始化工作细节
 		JobDetail jobDetail = newJob(HomeworkJob.class).withIdentity("查看作业",
 				"MyThu").build();
-		// 初始化Cron触发器，每天3次
+		// 初始化Cron触发器
 		CronTrigger cronTrigger = newTrigger().withIdentity("查看作业触发器", "MyThu")
 				.withSchedule(cronSchedule("0 0 0/" + HomeworkCronRunner.frequency + " * * ?")).forJob("查看作业", "MyThu").build();
 		// 调度器控制job
