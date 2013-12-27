@@ -72,9 +72,9 @@ public class Downloader extends Thread {
 				}
 				in.close();
 				out.close();
-				WindowDownloadInfo.addInfo(filename + " download completes.");
+				//WindowDownloadInfo.addInfo(filename + " download completes.");
 			} else {
-				WindowDownloadInfo.addInfo(filename + " exists.");
+				//WindowDownloadInfo.addInfo(filename + " exists.");
 			}
 			EntityUtils.consume(response.getEntity());
 			/*ThreadGroup group = Thread.currentThread().getThreadGroup();

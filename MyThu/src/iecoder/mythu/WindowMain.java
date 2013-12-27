@@ -12,10 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.http.client.ClientProtocolException;
@@ -24,7 +26,7 @@ public class WindowMain implements ActionListener {
 	static JFrame f = null;
 	static String rootPath = "";
 	static boolean login = false;
-	JButton begin;
+	static JButton begin;
 	static JButton rootPathButton;
 	String userid;
 	String userpass;
@@ -88,11 +90,15 @@ public class WindowMain implements ActionListener {
 		// 关闭窗口改成最小化
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
+				f.setVisible(false);
 				//System.exit(0);
 				// 系统监控
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						HomeworkTray.createUI();
+						if(false == HomeworkTray.exist) {
+							HomeworkTray.createUI();
+							HomeworkTray.exist = true;
+						}
 					}
 				});
 			}
@@ -107,6 +113,8 @@ public class WindowMain implements ActionListener {
 		String cmd = e.getActionCommand();
 		switch (cmd) {
 		case "清除":
+			// 销毁主窗口
+			f.dispose();
 			// 清除认证信息
 			try {
 				UserInfo.empty();
@@ -120,7 +128,7 @@ public class WindowMain implements ActionListener {
 			}
 			break;
 		case "开始":
-			this.begin.setText("下载ing...");
+			begin.setText("下载ing...");
 			(new Thread() {
 				public void run() {
 					SwingUtilities.invokeLater(new Runnable() {
@@ -139,6 +147,7 @@ public class WindowMain implements ActionListener {
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
+							Course.courseNumber = result.size();
 							Iterator<Course> resultIter = result.iterator();
 							while (resultIter.hasNext()) {
 								Course course = resultIter.next();
@@ -150,7 +159,14 @@ public class WindowMain implements ActionListener {
 									e1.printStackTrace();
 								}
 							}
-							System.out.println(g.activeCount());
+							try {
+								if(Course.es.awaitTermination(3600, TimeUnit.SECONDS)) {
+									JOptionPane.showMessageDialog(null,"课件下载完成");
+									WindowMain.begin.setText("下载完成");
+								}
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
 					});
 				}

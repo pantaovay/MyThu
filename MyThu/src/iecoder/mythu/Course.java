@@ -31,6 +31,7 @@ public class Course {
 	public String courseName;
 	public ArrayList<Homework> homeWork;
 	public static ExecutorService es = Executors.newCachedThreadPool();
+	public static Integer courseNumber = 0;
 	
 	/*
 	 * 构造函数
@@ -78,6 +79,7 @@ public class Course {
 	 * @return
 	 */
 	public void getCourseware(ThreadGroup g) throws ClientProtocolException, IOException {
+		Course.courseNumber -= 1;
 		// 下载的绝对路径
 		String coursePath;
 		if(WindowMain.rootPath == "") {
@@ -101,13 +103,17 @@ public class Course {
 		Elements courseWares = courseWarePageDOM
 				.select("a[href~=.*uploadFile.*]");
 		Iterator<Element> courseWaresIterator = courseWares.iterator();
-		WindowDownloadInfo.addInfo("下载到 " + coursePath + "......");
+		//WindowDownloadInfo.addInfo("下载到 " + coursePath + "......");
 		while (courseWaresIterator.hasNext()) {
 			Element courseWaresLink = courseWaresIterator.next();
 			String courseWarePath = courseWaresLink.attr("href");
-			es.execute(new Downloader(g, courseWarePath, coursePath));
+			Course.es.execute(new Downloader(g, courseWarePath, coursePath));
 			//Downloader thread = new Downloader(g, courseWarePath, coursePath);
 			//thread.start();
+		}
+		if(Course.courseNumber == 0) {
+			// 停止添加
+			Course.es.shutdown();
 		}
 	}
 

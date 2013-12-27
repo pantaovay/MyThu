@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.quartz.SchedulerException;
 
 public class HomeworkTray {
+	public static Boolean exist = false;
 	/*
 	 * 绘制系统监控UI
 	 */
@@ -58,7 +59,7 @@ public class HomeworkTray {
 		trayIcon.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new WindowMain();
+					WindowMain.f.setVisible(true);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -66,10 +67,10 @@ public class HomeworkTray {
 		});
 
 		// 查看主窗口事件
-		trayIcon.addActionListener(new ActionListener() {
+		mainItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new WindowMain();
+					WindowMain.f.setVisible(true);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
